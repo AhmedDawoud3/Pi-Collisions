@@ -1,7 +1,7 @@
 Class = require "class"
 require "block"
 count = 0
-digits = 8
+digits = 7
 timeSteps = 7 ^ (digits - 1)
 dT = 0
 function love.load()
@@ -39,6 +39,7 @@ function love.draw()
     end
 
     if clackSound then
+        clack:stop()
         clack:play()
     end
     clackSound = false

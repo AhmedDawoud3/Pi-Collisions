@@ -17,7 +17,7 @@ digits = 5
 timeSteps = 7 ^ (digits - 1)
 function love.load()
     clack = love.audio.newSource('clack.wav', 'static')
-    love.window.setMode(1920, 1080)
+    love.window.setMode(1280, 720)
     block1 = Block(100, 50, 1, 0)
     m2 = 100 ^ (digits - 1);
     block2 = Block(160, 200, m2, -1 / timeSteps)
@@ -62,7 +62,7 @@ function love.draw()
 
     -- Ground
     love.graphics.setColor(19 / 255, 158 / 255, 91 / 255)
-    love.graphics.rectangle("fill", 0, 1000, 1920, 80)
+    love.graphics.rectangle("fill", 0, 640, 1280, 80)
 
     -- First Block
     love.graphics.setColor(224 / 255, 90 / 255, 84 / 255)

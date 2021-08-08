@@ -1,26 +1,36 @@
+--[[
+    Pi Collision
+    Author: Ahmed Dawoud
+    adawoud1000@hotmail.com
+
+    Calculate Pi by counting the collision between two blocks
+
+    Inispired by 3b1b's Video: https://www.youtube.com/watch?v=HEfHFsfGXjs
+]]
 Class = require "class"
 require "block"
+-- Count is the number of collisions
 count = 0
-digits = 7
+-- digits is the number of digits of PI to be calculated
+digits = 5
+-- Time step is used to avoid the block going of screen
 timeSteps = 7 ^ (digits - 1)
-dT = 0
 function love.load()
     clack = love.audio.newSource('clack.wav', 'static')
-    love.window.setMode(800, 600)
-    block1 = Block(100, 20, 1, 0)
+    love.window.setMode(1920, 1080)
+    block1 = Block(100, 50, 1, 0)
     m2 = 100 ^ (digits - 1);
-    block2 = Block(200, 100, m2, -1 / timeSteps)
-
+    block2 = Block(160, 200, m2, -1 / timeSteps)
+    font0 = love.graphics.newFont("font0.ttf", 20)
+    font1 = love.graphics.newFont("font1.ttf", 50)
+    love.graphics.setLineWidth(10)
 end
 
 function love.update(dt)
-    dT = dt
-end
-
-function love.draw()
-    love.graphics.clear(200 / 255, 200 / 255, 200 / 255)
+    -- Only play clacksound when finish the loop
     clackSound = false
     for i = 1, timeSteps do
+        -- If the two Blocks collide then calculate the new V and increase the count
         if block1:Collides(block2) then
             v1 = block1:Bounce(block2)
             v2 = block2:Bounce(block1)
@@ -29,11 +39,13 @@ function love.draw()
             clackSound = true
             count = count + 1
         end
+        -- if it hits the wall then change its direction and increase the count
         if block1:HitWall() then
             block1:Reverse()
             clackSound = true
             count = count + 1
         end
+        -- Calling the update function to change the X positions
         block1:Update();
         block2:Update();
     end
@@ -43,12 +55,35 @@ function love.draw()
         clack:play()
     end
     clackSound = false
-    love.graphics.setColor(0.4, 0.4, 0.4, 1)
+end
+
+function love.draw()
+    love.graphics.clear(40 / 255, 48 / 255, 51 / 255)
+
+    -- Ground
+    love.graphics.setColor(19 / 255, 158 / 255, 91 / 255)
+    love.graphics.rectangle("fill", 0, 1000, 1920, 80)
+
+    -- First Block
+    love.graphics.setColor(224 / 255, 90 / 255, 84 / 255)
     block1:Render()
-    love.graphics.setColor(0.1, 0.1, 0.1, 1)
+
+    -- Second Block
+    love.graphics.setColor(0, 96 / 255, 255)
     block2:Render()
-    love.graphics.print("Pi = " .. tostring(count) .. "\n" .. "FPS :" .. tostring(1 / dT) .. "\n" .. "V1 :" ..
-                            tostring(block1.v * timeSteps) .. "\n" .. "V2 :" .. tostring(block2.v * timeSteps) .. "\n" ..
-                            "M2/M1 :" .. tostring(block2.m / block1.m) .. "\n" .. "m2V1 = " ..
-                            tostring(block1.m * block2.v) .. "\n" .. "m1v2 = " .. tostring(block1.m * block2.v))
+
+    --[[
+        Display detials
+    ]]
+    love.graphics.setColor(0.9, 0.9, 0.9, 1)
+    love.graphics.setFont(font0)
+    love.graphics.print("FPS :" .. tostring(love.timer.getFPS()) .. "\n" .. "V1 :" .. tostring(block1.v * timeSteps) ..
+                            "\n" .. "V2 :" .. tostring(block2.v * timeSteps) .. "\n" .. "m2/m1 :" ..
+                            tostring(block2.m / block1.m) .. "\n" .. "m2V1/m1v2 = " ..
+                            tostring(
+            tostring((block1.m * block2.v) / (block1.m * block2.v)) == "nan" and "One Of Them Stopped (v = 0)" or
+                tostring((block1.m * block2.v) / (block1.m * block2.v))))
+    love.graphics.setFont(font1)
+    love.graphics.printf("Calculated Pi = " .. tostring(count), 0, 200, 1920, 'center')
+    love.graphics.printf("m2 = (100 ^ " .. tostring(digits - 1) .. ")*m1", 0, 100, 1920, 'center')
 end
